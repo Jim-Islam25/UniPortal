@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #dashboard {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        #dashboard.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        #dashboard.hidden {
+            display: none !important;
+        }
+
+        .sidebar-link {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .sidebar-link.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border-left: 4px solid #60a5fa;
+            padding-left: calc(1.25rem - 4px);
+        }
+
+        .form-input {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .form-select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            background-color: white;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .action-button {
+            transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            opacity: 1;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+        }
+         .action-button:active {
+             opacity: 0.7;
+         }
+
+         .bg-blue-500 { background-color: #3b82f6; }
+         .hover\:bg-blue-600:hover { background-color: #2563eb; }
+
+         .bg-green-500 { background-color: #22c55e; }
+         .hover\:bg-green-600:hover { background-color: #16a34a; }
+
+         .bg-yellow-500 { background-color: #f59e0b; }
+         .hover\:bg-yellow-600:hover { background-color: #d97706; }
+
+         .bg-red-500 { background-color: #ef4444; }
+         .hover\:bg-red-700:hover { background-color: #b91c1c; }
+
+         .text-red-400 { color: #f87171; }
+         .hover\:bg-red-700:hover { background-color: #b91c1c; }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div id="loginPage" class="flex items-center justify-center h-screen">
+        <div class="bg-white p-8 rounded shadow-md w-96">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
+            <input type="text" id="username" placeholder="Username" class="form-input">
+            <input type="password" id="password" placeholder="Password" class="form-input">
+            <div class="flex items-center justify-between mb-4">
+                <label class="flex items-center text-sm text-gray-600">
+                    <input type="checkbox" class="mr-2"> Remember Me
+                </label>
+                <a href="#" class="text-blue-500 text-sm hover:underline">Forgot Password?</a>
+            </div>
+            <button onclick="login()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300 action-button">Login</button>
+            <p id="loginError" class="text-red-500 text-sm mt-3 hidden">Invalid username or password!</p>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <div class="flex h-screen">
+            <aside class="w-1/5 bg-gray-800 text-white p-6 flex flex-col">
+                <div class="mb-8 flex items-center">
+                    <svg class="w-8 h-8 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.868 5a4.5 4.5 
+                    0 00-3.737 1.532M12 18.747V5.747m0 13c1.168.773 2.754 1.25 4.132 1.25a4.5 4.5 0 003.737-1.532M12 5.747l.008 13.008"></path>
+                </svg>
+                    <h2 class="text-xl font-bold">UniPortal</h2>
+                </div>
+                <nav class="flex-grow">
+                    <ul class="space-y-2">
+                        <li><button onclick="showSection('studentRegistration', this)" class="block w-full text-left py-2 px-3 hover:bg-gray-700 transition duration-300 sidebar-link active">Student Registration</button></li>
+                        <li><button onclick="showSection('courseEnrollment', this)" class="block w-full text-left py-2 px-3 hover:bg-gray-700 transition duration-300 sidebar-link">Course Enrollment</button></li>
+                        <li><button onclick="showSection('gradesManagement', this)" class="block w-full text-left py-2 px-3 hover:bg-gray-700 transition duration-300 sidebar-link">Grades Management</button></li>
+                        <li><button onclick="showSection('attendanceTracking', this)" class="block w-full text-left py-2 px-3 hover:bg-gray-700 transition duration-300 sidebar-link">Attendance Tracking</button></li>
+                    </ul>
+                </nav>
+                <div class="mt-8 border-t border-gray-700 pt-4">
+                    <button onclick="logout()" class="block w-full text-left py-2 px-3 hover:bg-red-700 text-red-400 transition duration-300 action-button">Logout</button>
+                </div>
+            </aside>
+
+            <main class="w-4/5 bg-gray-100 p-8">
+                <header class="mb-6">
+                    <h2 class="text-3xl font-semibold text-gray-800"></h2>
+                </header>
+
+                <section id="studentRegistration" class="">
+                    <div class="mb-4">
+                        <input type="text" id="studentName" placeholder="Student Name" class="form-input">
+                        <input type="date" id="studentDOB" class="form-input">
+                        <select id="studentGender" class="form-select">
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <input type="email" id="studentEmail" placeholder="Email Address" class="form-input">
+                        <input type="tel" id="studentPhone" placeholder="Phone Number" class="form-input">
+                         <select id="studentCourse" class="form-select">
+                            <option value="" disabled selected>Select Course</option>
+                            <option value="CSE-401, Compiler Design">CSE-401, Compiler Design</option>
+                            <option value="CSE-402, Compiler Design Lab">CSE-402, Compiler Design Lab</option>
+                            <option value="CSE-403, Peripherals & Interfacing">CSE-403, Peripherals & Interfacing</option>
+                            <option value="CSE-404, Peripherals & Interfacing Lab">CSE-404, Peripherals & Interfacing Lab</option>
+                            <option value="CSE-405, E-Commerce & Web Engineering">CSE-409, E-Commerce & Web Engineering</option>
+                            <option value="CSE-406, E-Commerce & Web Engineering Lab">CSE-410, E-Commerce & Web Engineering Lab</option>
+                        </select>
+                         <select id="studentTeacher" class="form-select">
+                            <option value="" disabled selected>Select Course Teacher</option>
+                            <option value="Antu Chowdhury">Antu Chowdhury</option>
+                            <option value="Md. Mashrur Alam">Md. Mashrur Alam</option>
+                            <option value="Saimoon Al Farshi Oman">Saimoon Al Farshi Oman</option>
+                        </select>
+                         <select id="studentBatchTime" class="form-select">
+                            <option value="" disabled selected>Select Batch Time</option>
+                            <option value="Morning (8 AM - 10 AM)">Morning (8 AM - 10 AM)</option>
+                            <option value="Day (10 AM - 12 PM)">Day (10 AM - 12 PM)</option>
+                            <option value="Afternoon (2 PM - 4 PM)">Afternoon (2 PM - 4 PM)</option>
+                            <option value="Evening (6 PM - 8 PM)">Evening (6 PM - 8 PM)</option>
+                        </select>
+                        <button onclick="registerStudent()" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300 action-button">Register Student</button>
+                    </div>
+                </section>
+
+                <section id="courseEnrollment" class="hidden">
+                    <div class="mb-4">
+                        <input type="text" id="enrollStudentName" placeholder="Student Name" class="form-input">
+                         <input type="text" id="enrollStudentID" placeholder="Student ID" class="form-input">
+                         <select id="enrollCourseSelect" class="form-select">
+                            <option value="" disabled selected>Select Course to Enroll</option>
+                             <option value="CSE-401, Compiler Design">CSE-401, Compiler Design</option>
+                            <option value="CSE-402, Compiler Design Lab">CSE-402, Compiler Design Lab</option>
+                            <option value="CSE-403, Peripherals & Interfacing">CSE-403, Peripherals & Interfacing</option>
+                            <option value="CSE-404, Peripherals & Interfacing Lab">CSE-404, Peripherals & Interfacing Lab</option>
+                            <option value="CSE-405, E-Commerce & Web Engineering">CSE-409, E-Commerce & Web Engineering</option>
+                            <option value="CSE-406, E-Commerce & Web Engineering Lab">CSE-410, E-Commerce & Web Engineering Lab</option>
+                        </select>
+                         <select id="enrollTeacherSelect" class="form-select">
+                            <option value="" disabled selected>Select Course Teacher</option>
+                            <option value="Antu Chowdhury">Antu Chowdhury</option>
+                            <option value="Md. Mashrur Alam">Md. Mashrur Alam</option>
+                            <option value="Saimoon Al Farshi Oman">Saimoon Al Farshi Oman</option>
+                        </select>
+                         <select id="enrollBatchTimeSelect" class="form-select">
+                            <option value="" disabled selected>Select Batch Time</option>
+                            <option value="Morning (8 AM - 10 AM)">Morning (8 AM - 10 AM)</option>
+                            <option value="Day (10 AM - 12 PM)">Day (10 AM - 12 PM)</option>
+                            <option value="Afternoon (2 PM - 4 PM)">Afternoon (2 PM - 4 PM)</option>
+                            <option value="Evening (6 PM - 8 PM)">Evening (6 PM - 8 PM)</option>
+                        </select>
+                        <button onclick="enrollCourse()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 action-button">Enroll in Course</button>
+                    </div>
+                </section>
+
+                <section id="gradesManagement" class="hidden">
+                    <div class="mb-4">
+                         <input type="text" id="gradeStudentName" placeholder="Student Name" class="form-input">
+                        <input type="text" id="gradeStudentID" placeholder="Student ID" class="form-input">
+                         <select id="gradeCourseSelect" class="form-select">
+                            <option value="" disabled selected>Select Course</option>
+                             <option value="CSE-401, Compiler Design">CSE-401, Compiler Design</option>
+                            <option value="CSE-402, Compiler Design Lab">CSE-402, Compiler Design Lab</option>
+                            <option value="CSE-403, Peripherals & Interfacing">CSE-403, Peripherals & Interfacing</option>
+                            <option value="CSE-404, Peripherals & Interfacing Lab">CSE-404, Peripherals & Interfacing Lab</option>
+                            <option value="CSE-405, E-Commerce & Web Engineering">CSE-409, E-Commerce & Web Engineering</option>
+                            <option value="CSE-406, E-Commerce & Web Engineering Lab">CSE-410, E-Commerce & Web Engineering Lab</option>
+                        </select>
+                         <select id="gradeTeacherSelect" class="form-select">
+                            <option value="" disabled selected>Select Course Teacher</option>
+                            <option value="Antu Chowdhury">Antu Chowdhury</option>
+                            <option value="Md. Mashrur Alam">Md. Mashrur Alam</option>
+                            <option value="Saimoon Al Farshi Oman">Saimoon Al Farshi Oman</option>
+                        </select>
+                         <select id="gradeBatchTimeSelect" class="form-select">
+                            <option value="" disabled selected>Select Batch Time</option>
+                            <option value="Morning (8 AM - 10 AM)">Morning (8 AM - 10 AM)</option>
+                            <option value="Day (10 AM - 12 PM)">Day (10 AM - 12 PM)</option>
+                            <option value="Afternoon (2 PM - 4 PM)">Afternoon (2 PM - 4 PM)</option>
+                            <option value="Evening (6 PM - 8 PM)">Evening (6 PM - 8 PM)</option>
+                        </select>
+                        <input type="number" id="studentCourseGrade" placeholder="Course Grade (0-100)" class="form-input" min="0" max="100">
+                         <input type="number" id="studentCGPA" placeholder="CGPA (e.g., 3.50)" class="form-input" step="0.01" min="0" max="4">
+                        <button onclick="saveGrade()" class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 action-button">Save Grade/CGPA</button>
+                    </div>
+                </section>
+
+                <section id="attendanceTracking" class="hidden">
+                    <div class="mb-4">
+                        <input type="text" id="attendanceStudentName" placeholder="Student Name" class="form-input">
+                        <input type="text" id="attendanceStudentID" placeholder="Student ID" class="form-input">
+                         <select id="attendanceCourseSelect" class="form-select">
+                            <option value="" disabled selected>Select Course</option>
+                            <option value="CSE-401, Compiler Design">CSE-401, Compiler Design</option>
+                            <option value="CSE-402, Compiler Design Lab">CSE-402, Compiler Design Lab</option>
+                            <option value="CSE-403, Peripherals & Interfacing">CSE-403, Peripherals & Interfacing</option>
+                            <option value="CSE-404, Peripherals & Interfacing Lab">CSE-404, Peripherals & Interfacing Lab</option>
+                            <option value="CSE-405, E-Commerce & Web Engineering">CSE-409, E-Commerce & Web Engineering</option>
+                            <option value="CSE-406, E-Commerce & Web Engineering Lab">CSE-410, E-Commerce & Web Engineering Lab</option>
+                        </select>
+                         <select id="attendanceTeacherSelect" class="form-select">
+                            <option value="" disabled selected>Select Course Teacher</option>
+                            <option value="Antu Chowdhury">Antu Chowdhury</option>
+                            <option value="Md. Mashrur Alam">Md. Mashrur Alam</option>
+                            <option value="Saimoon Al Farshi Oman">Saimoon Al Farshi Oman</option>
+                        </select>
+                         <select id="attendanceBatchTimeSelect" class="form-select">
+                            <option value="" disabled selected>Select Batch Time</option>
+                            <option value="Morning (8 AM - 10 AM)">Morning (8 AM - 10 AM)</option>
+                            <option value="Day (10 AM - 12 PM)">Day (10 AM - 12 PM)</option>
+                            <option value="Afternoon (2 PM - 4 PM)">Afternoon (2 PM - 4 PM)</option>
+                            <option value="Evening (6 PM - 8 PM)">Evening (6 PM - 8 PM)</option>
+                        </select>
+                        <input type="date" id="attendanceDate" class="form-input">
+                        <select id="attendanceStatus" class="form-select">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Late">Late</option>
+                            <option value="Excused">Excused</option>
+                        </select>
+                        <textarea id="attendanceReason" placeholder="Reason for absence/lateness (optional)" class="form-input"></textarea>
+                        <button onclick="makeAttendance()" class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300 action-button">Make Attendance</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let registeredStudents = [];
+        let enrolledCourses = [];
+        let studentGrades = [];
+        let attendanceRecords = [];
+        let loggedIn = false;
+        const dashboardElement = document.getElementById("dashboard");
+        let currentActiveSidebarLink = null;
+
+        function login() {
+            const usernameInput = document.getElementById("username");
+            const passwordInput = document.getElementById("password");
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            const loginError = document.getElementById("loginError");
+
+            if (username === "admin" && password === "admin123") {
+                loggedIn = true;
+                document.getElementById("loginPage").classList.add("hidden");
+                dashboardElement.classList.remove("hidden");
+                loginError.classList.add("hidden");
+                const firstSidebarLink = document.querySelector('.sidebar-link');
+                if (firstSidebarLink) {
+                    firstSidebarLink.classList.add('active');
+                    currentActiveSidebarLink = firstSidebarLink;
+                    showSection('studentRegistration', firstSidebarLink);
+                }
+            } else {
+                loginError.classList.remove("hidden");
+            }
+        }
+
+        function logout() {
+            if (loggedIn) {
+                dashboardElement.classList.add("fade-out");
+                setTimeout(() => {
+                    loggedIn = false;
+                    dashboardElement.classList.remove("fade-out");
+                    dashboardElement.classList.add("hidden");
+                    document.getElementById("loginPage").classList.remove("hidden");
+                    if (currentActiveSidebarLink) {
+                        currentActiveSidebarLink.classList.remove('active');
+                        currentActiveSidebarLink = null;
+                    }
+                    ["studentRegistration", "courseEnrollment", "gradesManagement", "attendanceTracking"].forEach(id => {
+                        document.getElementById(id).classList.add("hidden");
+                    });
+                }, 300);
+            } else {
+                alert("Please log in first!");
+            }
+        }
+
+        function showSection(sectionId, clickedLink) {
+            if (loggedIn) {
+                ["studentRegistration", "courseEnrollment", "gradesManagement", "attendanceTracking"].forEach(id => {
+                    document.getElementById(id).classList.add("hidden");
+                });
+                document.getElementById(sectionId).classList.remove("hidden");
+
+                if (currentActiveSidebarLink) {
+                    currentActiveSidebarLink.classList.remove('active');
+                }
+                clickedLink.classList.add('active');
+                currentActiveSidebarLink = clickedLink;
+
+                const headerElement = document.querySelector('main header h2');
+                switch(sectionId) {
+                    case 'studentRegistration':
+                        headerElement.textContent = 'Student Registration';
+                        break;
+                    case 'courseEnrollment':
+                        headerElement.textContent = 'Course Enrollment';
+                        break;
+                    case 'gradesManagement':
+                        headerElement.textContent = 'Grades Management';
+                        break;
+                    case 'attendanceTracking':
+                        headerElement.textContent = 'Attendance Tracking';
+                        break;
+                    default:
+                        headerElement.textContent = 'University Portal Dashboard';
+                }
+
+            } else {
+                alert("Please log in first!");
+            }
+        }
+        function registerStudent() {
+            const name = document.getElementById("studentName").value;
+            const dob = document.getElementById("studentDOB").value;
+            const gender = document.getElementById("studentGender").value;
+            const email = document.getElementById("studentEmail").value;
+            const phone = document.getElementById("studentPhone").value;
+            const course = document.getElementById("studentCourse").value;
+            const teacher = document.getElementById("studentTeacher").value; 
+            const batchTime = document.getElementById("studentBatchTime").value;
+            const id = generateUniqueId();
+
+            if (name && dob && course && teacher && batchTime) { // Added teacher to validation
+                const newStudent = { id, name, dob, gender, email, phone, course, teacher, batchTime }; 
+                registeredStudents.push(newStudent);
+                clearRegistrationForm();
+                 alert("Student registered successfully! Student ID: " + id);
+            } else {
+                alert("Please fill in all the required information (Name, DOB, Course, Course Teacher, Batch Time)."); 
+            }
+        }
+
+        function updateStudentList() {
+             console.log("Registered Students:", registeredStudents);
+        }
+
+        function clearRegistrationForm() {
+            document.getElementById("studentName").value = "";
+            document.getElementById("studentDOB").value = "";
+            document.getElementById("studentGender").selectedIndex = 0;
+            document.getElementById("studentEmail").value = "";
+            document.getElementById("studentPhone").value = "";
+            document.getElementById("studentCourse").selectedIndex = 0;
+            document.getElementById("studentTeacher").selectedIndex = 0; 
+            document.getElementById("studentBatchTime").selectedIndex = 0;
+        }
+
+        function enrollCourse() {
+            const studentName = document.getElementById("enrollStudentName").value;
+             const studentID = document.getElementById("enrollStudentID").value;
+            const course = document.getElementById("enrollCourseSelect").value;
+            const teacher = document.getElementById("enrollTeacherSelect").value; 
+            const batchTime = document.getElementById("enrollBatchTimeSelect").value;
+            const enrollmentID = generateUniqueId();
+
+            if (studentName && studentID && course && teacher && batchTime) { 
+                 const studentExists = registeredStudents.some(student => student.id === studentID);
+                 if (!studentExists) {
+                     alert("Student ID not found. Please register the student first.");
+                     return;
+                 }
+
+                const enrollment = { id: enrollmentID, studentName, studentID, course, teacher, batchTime }; 
+                enrolledCourses.push(enrollment);
+                clearEnrollmentForm();
+                 alert("Student enrolled successfully! Enrollment ID: " + enrollmentID);
+            } else {
+                alert("Please enter student name, ID, select a course, course teacher, and batch time."); 
+            }
+        }
+
+        function updateEnrolledCourseList() {
+             console.log("Enrolled Courses:", enrolledCourses);
+        }
+
+        function clearEnrollmentForm() {
+            document.getElementById("enrollStudentName").value = "";
+            document.getElementById("enrollStudentID").value = "";
+            document.getElementById("enrollCourseSelect").selectedIndex = 0;
+            document.getElementById("enrollTeacherSelect").selectedIndex = 0; // Clear teacher selection
+            document.getElementById("enrollBatchTimeSelect").selectedIndex = 0;
+        }
+
+        function saveGrade() {
+             const studentName = document.getElementById("gradeStudentName").value;
+            const studentID = document.getElementById("gradeStudentID").value;
+            const course = document.getElementById("gradeCourseSelect").value;
+            const teacher = document.getElementById("gradeTeacherSelect").value; // Get selected teacher
+            const batchTime = document.getElementById("gradeBatchTimeSelect").value;
+            const courseGrade = document.getElementById("studentCourseGrade").value;
+             const cgpa = document.getElementById("studentCGPA").value;
+
+            if (studentName && studentID && course && teacher && batchTime && (courseGrade !== "" || cgpa !== "")) { // Added teacher to validation
+                 const studentExists = registeredStudents.some(student => student.id === studentID) || enrolledCourses.some(enrollment => enrollment.studentID === studentID);
+                 if (!studentExists) {
+                     alert("Student ID not found. Please register or enroll the student first.");
+                     return;
+                 }
+
+                 const gradeRecord = {
+                     id: generateUniqueId(),
+                     studentName,
+                     studentID,
+                     course,
+                     teacher, // Added teacher to object
+                     batchTime,
+                     courseGrade: courseGrade !== "" ? parseInt(courseGrade) : null,
+                     cgpa: cgpa !== "" ? parseFloat(cgpa) : null
+                    };
+
+                studentGrades.push(gradeRecord);
+                clearGradeForm();
+
+                 let successMessage = "Grade/CGPA saved successfully! Record ID: " + gradeRecord.id;
+                 if (courseGrade !== "") {
+                     successMessage += ", Course Grade: " + gradeRecord.courseGrade;
+                 }
+                  if (cgpa !== "") {
+                     successMessage += ", CGPA: " + gradeRecord.cgpa;
+                  }
+
+                 alert(successMessage);
+            } else {
+                alert("Please provide student name, ID, course, course teacher, batch time, and either a course grade or CGPA."); // Updated alert
+            }
+        }
+
+        function updateGradeList() {
+              console.log("Student Grades:", studentGrades);
+        }
+
+        function clearGradeForm() {
+            document.getElementById("gradeStudentName").value = "";
+            document.getElementById("gradeStudentID").value = "";
+            document.getElementById("gradeCourseSelect").selectedIndex = 0;
+            document.getElementById("gradeTeacherSelect").selectedIndex = 0; // Clear teacher selection
+            document.getElementById("gradeBatchTimeSelect").selectedIndex = 0;
+            document.getElementById("studentCourseGrade").value = "";
+             document.getElementById("studentCGPA").value = "";
+        }
+
+        function markAttendance() {
+            const studentName = document.getElementById("attendanceStudentName").value;
+            const studentID = document.getElementById("attendanceStudentID").value;
+            const course = document.getElementById("attendanceCourseSelect").value;
+            const teacher = document.getElementById("attendanceTeacherSelect").value; // Get selected teacher
+            const batchTime = document.getElementById("attendanceBatchTimeSelect").value;
+            const attendanceDate = document.getElementById("attendanceDate").value;
+            const status = document.getElementById("attendanceStatus").value;
+            const reason = document.getElementById("attendanceReason").value;
+
+            if (studentName && studentID && course && teacher && batchTime && attendanceDate && status) { // Added teacher to validation
+                 const studentExists = registeredStudents.some(student => student.id === studentID) || enrolledCourses.some(enrollment => enrollment.studentID === studentID);
+                 if (!studentExists) {
+                     alert("Student ID not found. Please register or enroll the student first.");
+                     return;
+                 }
+                const attendance = { id: generateUniqueId(), studentName, studentID, course, teacher, batchTime, date: attendanceDate, status, reason }; // Added teacher to object
+                attendanceRecords.push(attendance);
+                clearAttendanceForm();
+                 alert("Attendance marked successfully! Record ID: " + attendance.id);
+            } else {
+                alert("Please enter student name, ID, select course, course teacher, batch time, date, and mark attendance."); // Updated alert
+            }
+        }
+
+        function updateAttendanceList() {
+             console.log("Attendance Records:", attendanceRecords);
+        }
+
+        function generateUniqueId() {
+            return Math.random().toString(36).substring(2, 15);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const headerElement = document.querySelector('main header h2');
+            headerElement.textContent = 'Welcome to UniPortal';
+        });
+
+    </script>
+
+</body>
+</html>
